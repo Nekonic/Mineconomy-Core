@@ -1,0 +1,9 @@
+name: Mineconomy
+version: '${version}'
+main: nekonic.Mineconomy
+api-version: '1.21.1'
+commands:
+  mark:
+    description: "플레이어와 기업의 자본을 관리합니다."
+  stock:
+    description: "기업의 주식을 관리합니다."
