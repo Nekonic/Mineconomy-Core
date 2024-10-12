@@ -1,6 +1,7 @@
 package nekonic;
 
 import nekonic.DB.DatabaseManager;
+import nekonic.commands.CommandHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Mineconomy extends JavaPlugin {

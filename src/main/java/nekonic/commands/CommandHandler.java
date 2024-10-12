@@ -1,9 +1,10 @@
-package nekonic;
+package nekonic.commands;
 
 import nekonic.DB.DatabaseManager;
 import nekonic.DB.PlayerStock;
 import nekonic.DB.Stock;
 
+import nekonic.Mineconomy;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;

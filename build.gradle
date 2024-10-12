@@ -6,14 +6,28 @@ group = 'nekonic'
 version = '1.0-SNAPSHOT'
 
 repositories {
-    mavenCentral()
+    mavenCentral()// Maven 중앙 저장소
     maven { url = 'https://papermc.io/repo/repository/maven-public/' }
 }
 
 
 dependencies {
+    // JUnit 5 (Jupiter) - 테스트용
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.5'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.5'
+
+    // Mockito - 테스트용
+    testImplementation 'org.mockito:mockito-core:5.13.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.13.0'
+
+    // AssertJ - 테스트용
+    testImplementation 'org.assertj:assertj-core:3.25.3'
+
+    // Paper API - 서버 빌드 시 필요
     compileOnly 'io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT'
-    implementation 'org.xerial:sqlite-jdbc:3.34.0' // SQLite
+
+    // SQLite - JDBC 드라이버
+    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
 }
 
 java {
@@ -31,9 +45,13 @@ processResources {
 
 jar {
     archiveFileName = 'Mineconomy.jar'
-    destinationDirectory = file("D:\\1\\java\\server\\plugins")//server plugin directory
+    destinationDirectory = file("C:\\1Server\\plugins")//server plugin directory
 }
 
 tasks.withType(JavaCompile){
     options.encoding = "UTF-8"
+}
+
+test {
+    useJUnitPlatform() // JUnit 5 플랫폼에서 테스트 실행
 }

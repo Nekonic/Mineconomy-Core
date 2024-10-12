@@ -8,6 +8,7 @@
 Build/
 .gradle/
 .gradle
+gradle
 **/build/
 !src/**/build/
 
@@ -28,3 +29,6 @@ gradle-app.setting
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
+
+gradlew
+gradlew.bat
