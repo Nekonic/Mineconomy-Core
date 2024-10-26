@@ -79,4 +79,25 @@ public class EconomyManager {
         player.sendMessage(ChatColor.GREEN + "Withdrew " + ChatColor.GOLD + coinCount + " Gold Coins"
                 + ChatColor.GREEN + " (worth " + totalWithdraw + " Mark) from your account.");
     }
+
+    // 송금 기능 구현
+    public void sendMoney(Player sender, Player receiver, double amount) {
+        double senderBalance = getBalance(sender);
+
+        // 송금 가능 여부 확인
+        if (amount > senderBalance) {
+            sender.sendMessage(ChatColor.RED + "Insufficient balance. You have " + senderBalance + " Mark available.");
+            return;
+        }
+
+        // 송금자의 잔액 차감 및 수신자 잔액 증가
+        setBalance(sender, senderBalance - amount);
+        setBalance(receiver, getBalance(receiver) + amount);
+
+        // 송금 및 수신 확인 메시지
+        sender.sendMessage(ChatColor.GREEN + "Successfully sent " + ChatColor.GOLD + amount + " Mark"
+                + ChatColor.GREEN + " to " + receiver.getName() + ".");
+        receiver.sendMessage(ChatColor.GREEN + "You have received " + ChatColor.GOLD + amount + " Mark"
+                + ChatColor.GREEN + " from " + sender.getName() + ".");
+    }
 }

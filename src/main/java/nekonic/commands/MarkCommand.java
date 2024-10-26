@@ -68,6 +68,26 @@ public class MarkCommand implements CommandExecutor {
             return true;
         }
 
+        if (args.length == 3 && args[0].equalsIgnoreCase("send")) {
+            Player receiver = Bukkit.getPlayer(args[1]);
+            if (receiver == null) {
+                player.sendMessage(ChatColor.RED + "The specified player is not online.");
+                return true;
+            }
+
+            try {
+                double amount = Double.parseDouble(args[2]);
+                if (amount <= 0) {
+                    player.sendMessage(ChatColor.RED + "Please enter a positive amount to send.");
+                    return true;
+                }
+                economyManager.sendMoney(player, receiver, amount);
+            } catch (NumberFormatException e) {
+                player.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
+            }
+            return true;
+        }
+
         player.sendMessage(ChatColor.RED + "Usage: /mark balance or /mark setbalance <player> <amount>");
         return false;
     }
