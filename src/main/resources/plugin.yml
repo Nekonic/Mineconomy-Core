@@ -1,9 +1,10 @@
-name: Mineconomy
+name: Mineconomy-Core
 version: '${version}'
-main: nekonic.Mineconomy
+main: nekonic.Main
 api-version: '1.21.1'
+author: Nekonic
+description: "Mineconomy-Core 플러그인 - 경제, 은행, 주식 기능을 관리하는 핵심 플러그인"
+
 commands:
   mark:
-    description: "플레이어와 기업의 자본을 관리합니다."
-  stock:
-    description: "기업의 주식을 관리합니다."
+    description: "Mark 관련 명령어"
