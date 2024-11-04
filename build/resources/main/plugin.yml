@@ -1,0 +1,10 @@
+name: Mineconomy-Core
+version: '1.0-SNAPSHOT'
+main: nekonic.Main
+api-version: '1.21.1'
+author: Nekonic
+description: "Mineconomy-Core 플러그인 - 경제, 은행, 주식 기능을 관리하는 핵심 플러그인"
+
+commands:
+  mark:
+    description: "Mark 관련 명령어"
