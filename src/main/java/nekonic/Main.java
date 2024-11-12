@@ -13,7 +13,11 @@ public class Main extends JavaPlugin {
     @Override
     public void onEnable() {
         if (!getDataFolder().exists()) {
-            getDataFolder().mkdirs();
+            try {
+                this.getDataFolder().mkdir();
+            } catch (Exception e) {
+                getLogger().info("Failed!");
+            }
         }
 
         // 데이터베이스와 EconomyManager 초기화
