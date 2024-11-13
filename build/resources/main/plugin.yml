@@ -8,3 +8,5 @@ description: "Mineconomy-Core 플러그인 - 경제, 은행, 주식 기능을 �
 commands:
   mark:
     description: "Mark 관련 명령어"
+  name:
+    description: "Name을 특정한 ID로 대체하는 명령어"

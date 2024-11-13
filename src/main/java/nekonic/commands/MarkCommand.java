@@ -1,5 +1,6 @@
 package nekonic.commands;
 
+import nekonic.managers.DatabaseManager;
 import nekonic.managers.EconomyManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,85 +11,106 @@ import org.bukkit.entity.Player;
 
 public class MarkCommand implements CommandExecutor {
     private final EconomyManager economyManager;
+    private final DatabaseManager databaseManager;
 
-    public MarkCommand(EconomyManager economyManager) {
+
+    public MarkCommand(EconomyManager economyManager, DatabaseManager databaseManager) {
         this.economyManager = economyManager;
+        this.databaseManager = databaseManager;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+        if (args.length < 2) {
+            sender.sendMessage(ChatColor.RED + "Usage: /mark <ID> <balance|deposit|withdraw|setbalance|send>");
+            return false;
+        }
+
+        String nameId = args[0];
+
+        // 1. 잔액 조회 명령어: /mark <ID> balance
+        if (args[1].equalsIgnoreCase("balance")) {
+            double balance = economyManager.getBalance(nameId);
+            sender.sendMessage(ChatColor.GREEN + nameId + "Your current balance is: " + ChatColor.GOLD + balance + " Mark");
             return true;
         }
 
-        Player player = (Player) sender;
+        // 2. 입금 명령어 (플레이어만 사용 가능): /mark <ID> deposit
+        if (args[1].equalsIgnoreCase("deposit")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+                return true;
+            }
 
-        // 잔액 확인 명령어
-        if (args.length == 1 && args[0].equalsIgnoreCase("balance")) {
-            double balance = economyManager.getBalance(player);
-            player.sendMessage(ChatColor.GREEN + "Your current balance is: " + ChatColor.GOLD + balance + " Mark");
-            return true;
-        }
+            // ID가 플레이어인지 확인
+            if (!databaseManager.isPlayer(nameId)) {
+                sender.sendMessage(ChatColor.RED + "Deposit command is only available to players.");
+                return true;
+            }
 
-        if (args.length == 1 && args[0].equalsIgnoreCase("deposit")) {
+            Player player = (Player) sender;
             economyManager.deposit(player);
             return true;
         }
 
-        if (args.length == 2 && args[0].equalsIgnoreCase("withdraw")) {
-            try {
-                double amount = Double.parseDouble(args[1]);
-                if (amount <= 0) {
-                    player.sendMessage(ChatColor.RED + "Please enter a positive amount to withdraw.");
-                    return true;
-                }
-                economyManager.withdraw(player, amount);
-            } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
+        // 3. 출금 명령어 (플레이어만 사용 가능): /mark <ID> withdraw <amount>
+        if (args[1].equalsIgnoreCase("withdraw") && args.length == 3) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+                return true;
             }
-            return true;
-        }
 
-        // 관리자가 사용할 수 있는 setbalance 명령어
-        if (args.length == 3 && args[0].equalsIgnoreCase("setbalance") && player.isOp()) {
-            Player targetPlayer = Bukkit.getPlayer(args[1]);
-            if (targetPlayer == null) {
-                player.sendMessage(ChatColor.RED + "The specified player is not online.");
+            // ID가 플레이어인지 확인
+            if (!databaseManager.isPlayer(nameId)) {
+                sender.sendMessage(ChatColor.RED + "Withdraw command is only available to players.");
                 return true;
             }
 
             try {
                 double amount = Double.parseDouble(args[2]);
-                economyManager.setBalance(targetPlayer, amount);
-                player.sendMessage(ChatColor.GREEN + "Set " + targetPlayer.getName() + "'s balance to " + amount + " Mark");
+                economyManager.withdraw(nameId, amount);
             } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
+                sender.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
             }
             return true;
         }
 
-        if (args.length == 3 && args[0].equalsIgnoreCase("send")) {
-            Player receiver = Bukkit.getPlayer(args[1]);
-            if (receiver == null) {
-                player.sendMessage(ChatColor.RED + "The specified player is not online.");
+        // 4. 송금 명령어: /mark <ID> send <targetID> <amount> (플레이어만 사용 가능)
+        if (args[1].equalsIgnoreCase("send") && args.length == 4) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "Only players can use this command.");
                 return true;
             }
 
+            // 송신자 ID가 플레이어인지 확인
+            if (!databaseManager.isPlayer(nameId)) {
+                sender.sendMessage(ChatColor.RED + "Send command is only available to players.");
+                return true;
+            }
+
+            String targetId = args[2];
             try {
-                double amount = Double.parseDouble(args[2]);
-                if (amount <= 0) {
-                    player.sendMessage(ChatColor.RED + "Please enter a positive amount to send.");
-                    return true;
-                }
-                economyManager.sendMoney(player, receiver, amount);
+                double amount = Double.parseDouble(args[3]);
+                economyManager.sendMoney(nameId, targetId, amount);
             } catch (NumberFormatException e) {
-                player.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
+                sender.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
             }
             return true;
         }
 
-        player.sendMessage(ChatColor.RED + "Usage: /mark balance or /mark setbalance <player> <amount>");
+        // 5. 관리자 잔액 설정 명령어: /mark <ID> setbalance <amount> (관리자만 사용 가능)
+        if (args[1].equalsIgnoreCase("setbalance") && args.length == 3 && sender.isOp()) {
+            try {
+                double amount = Double.parseDouble(args[2]);
+                economyManager.setBalance(nameId, amount);
+                sender.sendMessage(ChatColor.GREEN + "Set " + nameId + "'s balance to " + amount + " Mark");
+            } catch (NumberFormatException e) {
+                sender.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
+            }
+            return true;
+        }
+
+        sender.sendMessage(ChatColor.RED + "Usage: /mark balance or /mark setbalance <player> <amount>");
         return false;
     }
 }

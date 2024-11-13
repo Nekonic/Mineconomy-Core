@@ -1,12 +1,13 @@
 package nekonic.managers;
 
 import org.bukkit.plugin.java.JavaPlugin;
-
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 public class DatabaseManager {
     private Connection connection;
@@ -26,22 +27,55 @@ public class DatabaseManager {
         }
     }
 
-    private void createTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS players ("
-                + "player_id TEXT PRIMARY KEY,"
-                + "balance REAL DEFAULT 0.0"
-                + ");";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.execute();
+    // ID 중복 체크 메서드
+    public boolean isNameIdDuplicate(String nameId) {
+        String query = "SELECT COUNT(*) FROM users WHERE name_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, nameId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
         } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 새로운 사용자 추가 메서드
+    public boolean addUser(String nameId, String type, String uuid) {
+        String query = "INSERT INTO users (name_id, type, uuid) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, nameId);
+            stmt.setString(2, type);
+            stmt.setString(3, uuid);
+            stmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void createTable() {
+        try (InputStream inputStream = getClass().getResourceAsStream("/sql/create_tables.sql");
+             Scanner scanner = new Scanner(inputStream)) {
+            scanner.useDelimiter(";");
+            while (scanner.hasNext()) {
+                String sqlStatement = scanner.next().trim();
+                if (!sqlStatement.isEmpty()) {
+                    try (PreparedStatement stmt = connection.prepareStatement(sqlStatement)) {
+                        stmt.execute();
+                    }
+                }
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public double getBalance(String playerId) {
-        String sql = "SELECT balance FROM players WHERE player_id = ?";
+    public double getBalance(String nameId) {
+        String sql = "SELECT balance FROM users WHERE name_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, playerId);
+            stmt.setString(1, nameId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return rs.getDouble("balance");
@@ -62,14 +96,55 @@ public class DatabaseManager {
         }
     }
 
-    public void updateBalance(String playerId, double newBalance) {
-        String sql = "REPLACE INTO players (player_id, balance) VALUES (?, ?)";
+    public void updateBalance(String nameId, double newBalance) {
+        String sql = "UPDATE users SET balance = ? WHERE name_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, playerId);
-            stmt.setDouble(2, newBalance);
+            stmt.setDouble(1, newBalance);
+            stmt.setString(2, nameId);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    // 특정 ID가 플레이어인지 확인하는 메서드
+    public boolean isPlayer(String nameId) {
+        String query = "SELECT type FROM users WHERE name_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, nameId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && "PLAYER".equals(rs.getString("type"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 특정 플레이어의 UUID를 가져오는 메서드
+    public String getPlayerUUID(String nameId) {
+        String query = "SELECT uuid FROM users WHERE name_id = ? AND type = 'PLAYER'";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, nameId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("uuid");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // UUID 중복 확인 메서드
+    public boolean isUUIDDuplicate(String uuid) {
+        String query = "SELECT COUNT(*) FROM users WHERE uuid = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, uuid);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() && rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }

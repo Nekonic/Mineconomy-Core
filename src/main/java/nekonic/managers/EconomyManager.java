@@ -13,12 +13,12 @@ public class EconomyManager {
         this.databaseManager = databaseManager;
     }
 
-    public double getBalance(Player player) {
-        return databaseManager.getBalance(player.getUniqueId().toString());
+    public double getBalance(String nameId) {
+        return databaseManager.getBalance(nameId);
     }
 
-    public void setBalance(Player player, double amount) {
-        databaseManager.updateBalance(player.getUniqueId().toString(), amount);
+    public void setBalance(String nameId, double amount) {
+        databaseManager.updateBalance(nameId, amount);
     }
 
     public void deposit(Player player) {
@@ -33,14 +33,11 @@ public class EconomyManager {
         }
 
         if (totalCoins > 0) {
-            // 총 Gold Coin 가치 계산
             double totalDeposit = totalCoins * COIN_VALUE;
+            String playerId = player.getUniqueId().toString();
+            double newBalance = getBalance(playerId) + totalDeposit;
+            setBalance(playerId, newBalance);
 
-            // 플레이어 잔액 업데이트
-            double newBalance = getBalance(player) + totalDeposit;
-            setBalance(player, newBalance);
-
-            // 플레이어에게 알림 메시지
             player.sendMessage(ChatColor.GREEN + "Deposited " + ChatColor.GOLD + totalCoins + " Gold Coins"
                     + ChatColor.GREEN + " (worth " + totalDeposit + " Mark) into your account.");
         } else {
@@ -49,55 +46,74 @@ public class EconomyManager {
     }
 
     // 출금 기능 구현
-    public void withdraw(Player player, double amount) {
-        double currentBalance = getBalance(player);
+    public void withdraw(String nameId, double amount) {
+        double currentBalance = getBalance(nameId);
+        Player player = getPlayerById(nameId); // player 객체를 얻어온다
 
-        // 요청한 출금 금액이 잔액보다 많으면 출금 불가
         if (amount > currentBalance) {
-            player.sendMessage(ChatColor.RED + "Insufficient balance. Your current balance is " + currentBalance + " Mark.");
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + "Insufficient balance. Your current balance is " + ChatColor.GOLD + currentBalance + ChatColor.RED + " Mark.");
+            }
             return;
         }
 
-        // 출금할 Gold Coin 개수 계산
         int coinCount = (int) (amount / COIN_VALUE);
-
-        // 출금할 수 있는 최소 단위인지 확인 (1 Gold Coin 이상이어야 함)
         if (coinCount <= 0) {
-            player.sendMessage(ChatColor.RED + "Please withdraw at least " + COIN_VALUE + " Mark (1 Gold Coin).");
+            if (player != null) {
+                player.sendMessage(ChatColor.RED + "Please withdraw at least " + COIN_VALUE + " Mark (1 Gold Coin).");
+            }
             return;
         }
 
         double totalWithdraw = coinCount * COIN_VALUE;
+        setBalance(nameId, currentBalance - totalWithdraw);
 
-        // 새로운 잔액 계산 및 데이터베이스에 반영
-        setBalance(player, currentBalance - totalWithdraw);
+        if (player != null) {
+            ItemStack coins = CurrencyItem.createCurrencyItem(coinCount);
+            player.getInventory().addItem(coins);
 
-        // 출금할 Gold Coin 아이템 생성 및 인벤토리에 추가
-        ItemStack coins = CurrencyItem.createCurrencyItem(coinCount);
-        player.getInventory().addItem(coins);
-
-        player.sendMessage(ChatColor.GREEN + "Withdrew " + ChatColor.GOLD + coinCount + " Gold Coins"
-                + ChatColor.GREEN + " (worth " + totalWithdraw + " Mark) from your account.");
+            player.sendMessage(ChatColor.GREEN + "Withdrew " + ChatColor.GOLD + coinCount + " Gold Coins"
+                    + ChatColor.GREEN + " (worth " + totalWithdraw + " Mark) from your account.");
+        }
     }
 
     // 송금 기능 구현
-    public void sendMoney(Player sender, Player receiver, double amount) {
-        double senderBalance = getBalance(sender);
+    public void sendMoney(String senderId, String receiverId, double amount) {
+        double senderBalance = getBalance(senderId);
 
-        // 송금 가능 여부 확인
         if (amount > senderBalance) {
-            sender.sendMessage(ChatColor.RED + "Insufficient balance. You have " + senderBalance + " Mark available.");
+            Player senderPlayer = getPlayerById(senderId); // player 객체를 얻어온다
+            if (senderPlayer != null) {
+                senderPlayer.sendMessage(ChatColor.RED + "Insufficient balance. You have " + ChatColor.GOLD + senderBalance + ChatColor.RED + " Mark available.");
+            }
             return;
         }
 
-        // 송금자의 잔액 차감 및 수신자 잔액 증가
-        setBalance(sender, senderBalance - amount);
-        setBalance(receiver, getBalance(receiver) + amount);
+        setBalance(senderId, senderBalance - amount);
+        double receiverBalance = getBalance(receiverId);
+        setBalance(receiverId, receiverBalance + amount);
+
+        Player senderPlayer = getPlayerById(senderId);
+        Player receiverPlayer = getPlayerById(receiverId);
 
         // 송금 및 수신 확인 메시지
-        sender.sendMessage(ChatColor.GREEN + "Successfully sent " + ChatColor.GOLD + amount + " Mark"
-                + ChatColor.GREEN + " to " + receiver.getName() + ".");
-        receiver.sendMessage(ChatColor.GREEN + "You have received " + ChatColor.GOLD + amount + " Mark"
-                + ChatColor.GREEN + " from " + sender.getName() + ".");
+        if (senderPlayer != null) {
+            senderPlayer.sendMessage(ChatColor.GREEN + "Successfully sent " + ChatColor.GOLD + amount + " Mark"
+                    + ChatColor.GREEN + " to " + receiverId + ".");
+        }
+        if (receiverPlayer != null) {
+            receiverPlayer.sendMessage(ChatColor.GREEN + "You have received " + ChatColor.GOLD + amount + " Mark"
+                    + ChatColor.GREEN + " from " + senderId + ".");
+        }
+    }
+    // nameId를 통해 플레이어 객체를 찾는 헬퍼 메서드 (플레이어가 아닌 경우 null 반환)
+    private Player getPlayerById(String nameId) {
+        if (databaseManager.isPlayer(nameId)) {  // DatabaseManager에서 플레이어 확인
+            String uuid = databaseManager.getPlayerUUID(nameId);
+            if (uuid != null) {
+                return org.bukkit.Bukkit.getPlayer(java.util.UUID.fromString(uuid));
+            }
+        }
+        return null; // ID가 플레이어가 아니거나 UUID가 없는 경우 null 반환
     }
 }
