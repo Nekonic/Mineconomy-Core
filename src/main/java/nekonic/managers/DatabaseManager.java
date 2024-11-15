@@ -147,4 +147,18 @@ public class DatabaseManager {
         }
         return false;
     }
+
+    public String getNameId(String uuid) {
+        String query = "SELECT name_id FROM users WHERE uuid = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, uuid);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("name_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null; // name_id가 없을 경우 null 반환
+    }
 }

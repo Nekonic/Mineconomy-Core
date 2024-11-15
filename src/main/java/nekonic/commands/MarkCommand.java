@@ -31,7 +31,7 @@ public class MarkCommand implements CommandExecutor {
         // 1. 잔액 조회 명령어: /mark <ID> balance
         if (args[1].equalsIgnoreCase("balance")) {
             double balance = economyManager.getBalance(nameId);
-            sender.sendMessage(ChatColor.GREEN + nameId + "Your current balance is: " + ChatColor.GOLD + balance + " Mark");
+            sender.sendMessage(ChatColor.GREEN + nameId + " Your current balance is: " + ChatColor.GOLD + balance + " Mark");
             return true;
         }
 
@@ -82,9 +82,12 @@ public class MarkCommand implements CommandExecutor {
                 return true;
             }
 
-            // 송신자 ID가 플레이어인지 확인
-            if (!databaseManager.isPlayer(nameId)) {
-                sender.sendMessage(ChatColor.RED + "Send command is only available to players.");
+            Player player = (Player) sender;
+            String playerUuid = player.getUniqueId().toString();
+
+            // 송신자 ID가 플레이어이며, 명령어 입력자와 일치하는지 확인
+            if (!databaseManager.isPlayer(nameId) || !playerUuid.equals(databaseManager.getPlayerUUID(nameId))) {
+                sender.sendMessage(ChatColor.RED + "You can only send money from your own account.");
                 return true;
             }
 
@@ -92,6 +95,7 @@ public class MarkCommand implements CommandExecutor {
             try {
                 double amount = Double.parseDouble(args[3]);
                 economyManager.sendMoney(nameId, targetId, amount);
+                sender.sendMessage(ChatColor.GREEN + "Successfully sent " + amount + " Mark to " + targetId + ".");
             } catch (NumberFormatException e) {
                 sender.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
             }

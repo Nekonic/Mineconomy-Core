@@ -2,6 +2,7 @@ package nekonic;
 
 import nekonic.commands.MarkCommand;
 import nekonic.commands.NameCommand;
+import nekonic.listeners.ChatListener;
 import nekonic.managers.DatabaseManager;
 import nekonic.managers.EconomyManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +29,9 @@ public class Main extends JavaPlugin {
         // 명령어 등록
         getCommand("mark").setExecutor(new MarkCommand(economyManager, databaseManager));
         getCommand("name").setExecutor(new NameCommand(databaseManager));
+
+        //
+        getServer().getPluginManager().registerEvents(new ChatListener(databaseManager), this);
 
         getLogger().info("Mineconomy-Core enabled!");
     }
