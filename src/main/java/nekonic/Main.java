@@ -5,6 +5,8 @@ import nekonic.commands.NameCommand;
 import nekonic.listeners.ChatListener;
 import nekonic.managers.DatabaseManager;
 import nekonic.managers.EconomyManager;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
@@ -18,7 +20,9 @@ public class Main extends JavaPlugin {
             try {
                 this.getDataFolder().mkdir();
             } catch (Exception e) {
-                getLogger().info("Failed!");
+                getServer().getConsoleSender().sendMessage(
+                        Component.text("Failed!", NamedTextColor.DARK_RED)
+                );
             }
         }
 
@@ -33,14 +37,18 @@ public class Main extends JavaPlugin {
         //
         getServer().getPluginManager().registerEvents(new ChatListener(databaseManager), this);
 
-        getLogger().info("Mineconomy-Core enabled!");
+        getServer().getConsoleSender().sendMessage(
+                Component.text("Mineconomy-Core has been enabled!", NamedTextColor.DARK_AQUA)
+        );
     }
 
     @Override
     public void onDisable() {
         // 데이터베이스 연결 해제
         databaseManager.closeConnection();
-        getLogger().info("Mineconomy-Core disabled!");
+        getServer().getConsoleSender().sendMessage(
+                Component.text("Mineconomy-Core has been disabled!", NamedTextColor.DARK_AQUA)
+        );
     }
 
     public EconomyManager getEconomyManager() {
