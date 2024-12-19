@@ -2,7 +2,6 @@ package nekonic.commands;
 
 import nekonic.managers.DatabaseManager;
 import nekonic.managers.EconomyManager;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -30,7 +29,7 @@ public class MarkCommand implements CommandExecutor {
 
         // 1. 잔액 조회 명령어: /mark <ID> balance
         if (args[1].equalsIgnoreCase("balance")) {
-            double balance = economyManager.getBalance(nameId);
+            int balance = economyManager.getBalance(nameId);
             sender.sendMessage(ChatColor.GREEN + nameId + " Your current balance is: " + ChatColor.GOLD + balance + " Mark");
             return true;
         }
@@ -59,16 +58,9 @@ public class MarkCommand implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "Only players can use this command.");
                 return true;
             }
-
-            // ID가 플레이어인지 확인
-            if (!databaseManager.isPlayer(nameId)) {
-                sender.sendMessage(ChatColor.RED + "Withdraw command is only available to players.");
-                return true;
-            }
-
             try {
-                double amount = Double.parseDouble(args[2]);
-                economyManager.withdraw(nameId, amount);
+                int amount = Integer.parseInt(args[2]);
+                economyManager.withdraw(nameId, amount, ((Player) sender).getPlayer());
             } catch (NumberFormatException e) {
                 sender.sendMessage(ChatColor.RED + "Invalid amount. Please enter a valid number.");
             }
@@ -93,7 +85,7 @@ public class MarkCommand implements CommandExecutor {
 
             String targetId = args[2];
             try {
-                double amount = Double.parseDouble(args[3]);
+                int amount = Integer.parseInt(args[3]);
                 economyManager.sendMoney(nameId, targetId, amount);
                 sender.sendMessage(ChatColor.GREEN + "Successfully sent " + amount + " Mark to " + targetId + ".");
             } catch (NumberFormatException e) {
@@ -105,7 +97,7 @@ public class MarkCommand implements CommandExecutor {
         // 5. 관리자 잔액 설정 명령어: /mark <ID> setbalance <amount> (관리자만 사용 가능)
         if (args[1].equalsIgnoreCase("setbalance") && args.length == 3 && sender.isOp()) {
             try {
-                double amount = Double.parseDouble(args[2]);
+                int amount = Integer.parseInt(args[2]);
                 economyManager.setBalance(nameId, amount);
                 sender.sendMessage(ChatColor.GREEN + "Set " + nameId + "'s balance to " + amount + " Mark");
             } catch (NumberFormatException e) {

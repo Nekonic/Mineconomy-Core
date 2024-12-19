@@ -2,13 +2,12 @@ CREATE TABLE users (
     name_id TEXT PRIMARY KEY,            -- 사용자 고유 ID
     balance REAL DEFAULT 0.0,            -- 보유 화폐
     uuid TEXT UNIQUE,                    -- 플레이어의 고유 UUID
-    language TEXT DEFAULT 'en',          -- 사용자 언어 설정
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP -- 계정 생성 시간
+    language TEXT DEFAULT 'en'          -- 사용자 언어 설정
 );
 
 CREATE TABLE user_settings (
     name_id TEXT NOT NULL,               -- 사용자 ID
-    setting_key TEXT NOT NULL,           -- 설정 키 (예: 언어, 통화)
+    setting_key TEXT NOT NULL,           -- 설정 키 (예: 언어 등)
     setting_value TEXT,                  -- 설정 값
     PRIMARY KEY (name_id, setting_key),
     FOREIGN KEY (name_id) REFERENCES users(name_id)

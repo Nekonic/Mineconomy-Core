@@ -7,17 +7,17 @@ import org.bukkit.inventory.ItemStack;
 
 public class EconomyManager {
     private final DatabaseManager databaseManager;
-    private static final double COIN_VALUE = 100.0; // Gold Coin 1개당 100 Mark
+    private static final int COIN_VALUE = 100; // Gold Coin 1개당 100 Mark
 
     public EconomyManager(DatabaseManager databaseManager) {
         this.databaseManager = databaseManager;
     }
 
-    public double getBalance(String nameId) {
+    public int getBalance(String nameId) {
         return databaseManager.getBalance(nameId);
     }
 
-    public void setBalance(String nameId, double amount) {
+    public void setBalance(String nameId, int amount) {
         databaseManager.updateBalance(nameId, amount);
     }
 
@@ -33,9 +33,9 @@ public class EconomyManager {
         }
 
         if (totalCoins > 0) {
-            double totalDeposit = totalCoins * COIN_VALUE;
+            int totalDeposit = totalCoins * COIN_VALUE;
             String playerId = player.getUniqueId().toString();
-            double newBalance = getBalance(playerId) + totalDeposit;
+            int newBalance = getBalance(playerId) + totalDeposit;
             setBalance(playerId, newBalance);
 
             player.sendMessage(ChatColor.GREEN + "Deposited " + ChatColor.GOLD + totalCoins + " Gold Coins"
@@ -46,9 +46,8 @@ public class EconomyManager {
     }
 
     // 출금 기능 구현
-    public void withdraw(String nameId, double amount) {
-        double currentBalance = getBalance(nameId);
-        Player player = getPlayerById(nameId); // player 객체를 얻어온다
+    public void withdraw(String nameId, int amount, Player player) {
+        int currentBalance = getBalance(nameId);
 
         if (amount > currentBalance) {
             if (player != null) {
@@ -65,7 +64,7 @@ public class EconomyManager {
             return;
         }
 
-        double totalWithdraw = coinCount * COIN_VALUE;
+        int totalWithdraw = coinCount * COIN_VALUE;
         setBalance(nameId, currentBalance - totalWithdraw);
 
         if (player != null) {
@@ -78,8 +77,8 @@ public class EconomyManager {
     }
 
     // 송금 기능 구현
-    public void sendMoney(String senderId, String receiverId, double amount) {
-        double senderBalance = getBalance(senderId);
+    public void sendMoney(String senderId, String receiverId, int amount) {
+        int senderBalance = getBalance(senderId);
 
         if (amount > senderBalance) {
             Player senderPlayer = getPlayerById(senderId); // player 객체를 얻어온다
@@ -90,7 +89,7 @@ public class EconomyManager {
         }
 
         setBalance(senderId, senderBalance - amount);
-        double receiverBalance = getBalance(receiverId);
+        int receiverBalance = getBalance(receiverId);
         setBalance(receiverId, receiverBalance + amount);
 
         Player senderPlayer = getPlayerById(senderId);
@@ -106,6 +105,7 @@ public class EconomyManager {
                     + ChatColor.GREEN + " from " + senderId + ".");
         }
     }
+
     // nameId를 통해 플레이어 객체를 찾는 헬퍼 메서드 (플레이어가 아닌 경우 null 반환)
     private Player getPlayerById(String nameId) {
         if (databaseManager.isPlayer(nameId)) {  // DatabaseManager에서 플레이어 확인

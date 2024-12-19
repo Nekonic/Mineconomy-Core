@@ -1,12 +1,9 @@
 package nekonic.managers;
 
 import org.bukkit.plugin.java.JavaPlugin;
+
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Scanner;
 
 public class DatabaseManager {
@@ -28,7 +25,7 @@ public class DatabaseManager {
         }
     }
 
-    public static Connection getConnection(){
+    public static Connection getConnection() {
         return connection;
     }
 
@@ -47,12 +44,11 @@ public class DatabaseManager {
     }
 
     // 새로운 사용자 추가 메서드
-    public boolean addUser(String nameId, String type, String uuid) {
-        String query = "INSERT INTO users (name_id, type, uuid) VALUES (?, ?, ?)";
+    public boolean addUser(String nameId, String uuid) {
+        String query = "INSERT INTO users (name_id, uuid) VALUES (?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, nameId);
-            stmt.setString(2, type);
-            stmt.setString(3, uuid);
+            stmt.setString(2, uuid);
             stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
@@ -78,18 +74,18 @@ public class DatabaseManager {
         }
     }
 
-    public double getBalance(String nameId) {
+    public int getBalance(String nameId) {
         String sql = "SELECT balance FROM users WHERE name_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, nameId);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return rs.getDouble("balance");
+                return rs.getInt("balance");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return 0.0;
+        return 0;
     }
 
     public void closeConnection() {
@@ -128,7 +124,7 @@ public class DatabaseManager {
 
     // 특정 플레이어의 UUID를 가져오는 메서드
     public String getPlayerUUID(String nameId) {
-        String query = "SELECT uuid FROM users WHERE name_id = ? AND type = 'PLAYER'";
+        String query = "SELECT uuid FROM users WHERE name_id = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, nameId);
             ResultSet rs = stmt.executeQuery();
