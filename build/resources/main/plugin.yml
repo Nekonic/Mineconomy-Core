@@ -10,3 +10,5 @@ commands:
     description: "Mark 관련 명령어"
   name:
     description: "Name을 특정한 ID로 대체하는 명령어"
+  stock:
+    description: "Stock 관련 명령어"

@@ -10,7 +10,8 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class DatabaseManager {
-    private Connection connection;
+    private static DatabaseManager instance;
+    private static Connection connection;
     private final JavaPlugin plugin;
 
     public DatabaseManager(JavaPlugin plugin) {
@@ -26,6 +27,11 @@ public class DatabaseManager {
             e.printStackTrace();
         }
     }
+
+    public static Connection getConnection(){
+        return connection;
+    }
+
 
     // ID 중복 체크 메서드
     public boolean isNameIdDuplicate(String nameId) {
