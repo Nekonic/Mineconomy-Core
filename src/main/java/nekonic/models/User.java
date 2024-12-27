@@ -2,11 +2,11 @@ package nekonic.models;
 
 public class User {
     private String nameId;
-    private double balance;
+    private int balance;
     private String uuid;
     private String language;
 
-    public User(String nameId, double balance, String uuid, String language) {
+    public User(String nameId, int balance, String uuid, String language) {
         this.nameId = nameId;
         this.balance = balance;
         this.uuid = uuid;

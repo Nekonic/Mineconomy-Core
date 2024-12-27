@@ -19,7 +19,7 @@ public class StockManager {
             if (rs.next()) {
                 return new Stock(
                         rs.getString("ticker"),
-                        rs.getDouble("current_price"),
+                        rs.getInt("current_price"),
                         rs.getString("historical_prices"),
                         rs.getInt("volume"),
                         rs.getTimestamp("updated_at")
@@ -40,7 +40,7 @@ public class StockManager {
             while (rs.next()) {
                 stocks.add(new Stock(
                         rs.getString("ticker"),
-                        rs.getDouble("current_price"),
+                        rs.getInt("current_price"),
                         rs.getString("historical_prices"),
                         rs.getInt("volume"),
                         rs.getTimestamp("updated_at")

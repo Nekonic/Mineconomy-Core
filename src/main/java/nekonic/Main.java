@@ -7,9 +7,12 @@ import nekonic.listeners.ChatListener;
 import nekonic.managers.DatabaseManager;
 import nekonic.managers.EconomyManager;
 import nekonic.managers.StockManager;
+import nekonic.utils.MessageUtils;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.util.Locale;
 
 public class Main extends JavaPlugin {
 
@@ -19,12 +22,13 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        MessageUtils.setLocale(Locale.ENGLISH);
         if (!getDataFolder().exists()) {
             try {
                 this.getDataFolder().mkdir();
             } catch (Exception e) {
                 getServer().getConsoleSender().sendMessage(
-                        Component.text("Failed to create plugin directory!", NamedTextColor.DARK_RED)
+                        Component.text(MessageUtils.getMessage("plugin.enabled"), NamedTextColor.DARK_RED)
                 );
             }
         }
@@ -43,7 +47,7 @@ public class Main extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ChatListener(databaseManager), this);
 
         getServer().getConsoleSender().sendMessage(
-                Component.text("Mineconomy-Core has been enabled!", NamedTextColor.DARK_AQUA)
+                Component.text(MessageUtils.getMessage("plugin.enabled"), NamedTextColor.DARK_AQUA)
         );
     }
 
@@ -52,7 +56,7 @@ public class Main extends JavaPlugin {
         // 데이터베이스 연결 해제
         databaseManager.closeConnection();
         getServer().getConsoleSender().sendMessage(
-                Component.text("Mineconomy-Core has been disabled!", NamedTextColor.DARK_AQUA)
+                Component.text(MessageUtils.getMessage("plugin.disabled"), NamedTextColor.DARK_AQUA)
         );
     }
 

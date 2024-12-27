@@ -3,6 +3,13 @@
   "plugin.disabled": "Mineconomy-Core has been disabled!",
   "reload_message": "Configuration reloaded successfully!",
   "reload_message.lang": "Configuration reloaded. Language set to: ",
-  "graph.command.is-not-player": "This command can only be run by a player.",
-  "graph.gui.home-item": "back to menu"
+  "plugin.error.create_directory": "Failed to create plugin directory!",
+  "command.only_player": "Only players can use this command.",
+  "command.name.usage": "Usage: /name <ID>",
+  "command.name.id.error": "This ID is already in use. Choose a different ID.",
+  "command.name.uuid.error": "You are already registered.",
+  "command.name.success": "Your ID has been successfully set up: ",
+  "command.name.setup.error": "ID setup failed, please try again.",
+  "command.mark.usage": "Usage: /mark <ID> <balance|deposit|withdraw|setbalance|send>",
+  "command.stock.usage": "Usage: /stock <list|info>"
 }

@@ -2,6 +2,9 @@ package nekonic.commands;
 
 import nekonic.managers.DatabaseManager;
 import nekonic.managers.EconomyManager;
+import nekonic.utils.MessageUtils;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -21,7 +24,7 @@ public class MarkCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length < 2) {
-            sender.sendMessage(ChatColor.RED + "Usage: /mark <ID> <balance|deposit|withdraw|setbalance|send>");
+            sender.sendMessage(Component.text(MessageUtils.getMessage("command.mark.usage"), NamedTextColor.RED));
             return false;
         }
 
@@ -30,7 +33,7 @@ public class MarkCommand implements CommandExecutor {
         // 1. 잔액 조회 명령어: /mark <ID> balance
         if (args[1].equalsIgnoreCase("balance")) {
             int balance = economyManager.getBalance(nameId);
-            sender.sendMessage(ChatColor.GREEN + nameId + " Your current balance is: " + ChatColor.GOLD + balance + " Mark");
+            sender.sendMessage(Component.text(NamedTextColor.GREEN + nameId + " Your current balance is: " + NamedTextColor.GOLD + balance + " Mark"));
             return true;
         }
 

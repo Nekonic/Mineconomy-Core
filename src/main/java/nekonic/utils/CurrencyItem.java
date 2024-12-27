@@ -1,12 +1,10 @@
 package nekonic.utils;
 
-import org.bukkit.ChatColor;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CurrencyItem {
 
@@ -15,12 +13,12 @@ public class CurrencyItem {
         ItemMeta meta = currencyItem.getItemMeta();
 
         // 아이템 이름 설정
-        meta.setDisplayName(ChatColor.GOLD + "Gold Coin");
+        meta.displayName(Component.text("Gold Coin" + NamedTextColor.GOLD));
 
         // 아이템 설명 추가
-        List<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GRAY + "Used as currency in Mineconomy");
-        meta.setLore(lore);
+        meta.lore(
+                Component.text("Used as currency in Mineconomy", NamedTextColor.DARK_AQUA).children()
+        );
 
         // 커스텀 모델 데이터 추가
         meta.setCustomModelData(1001); // 1001번 커스텀 모델 데이터 설정
