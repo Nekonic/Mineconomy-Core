@@ -6,4 +6,5 @@
 .settings/org.eclipse.jdt.core.prefs
 .idea/
 .gradle/
-/build/tmp
+build/
+gradle/
