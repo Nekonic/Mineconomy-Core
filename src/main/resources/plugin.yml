@@ -4,6 +4,7 @@ main: nekonic.Main
 api-version: '1.21.1'
 author: Nekonic
 description: "Mineconomy-Core 플러그인 - 경제, 은행, 주식 기능을 관리하는 핵심 플러그인"
+depend: [ mineconomy-GUI ]
 
 commands:
   mark:

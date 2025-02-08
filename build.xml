@@ -1,0 +1,8 @@
+<?xml version="1.0" ?>
+<!DOCTYPE xml>
+<project name="Mineconomy-Core" default="Build">
+    <target name="Build">
+        <jar jarfile="/home/nekonic/1server/plugins/${ant.project.name}.jar" basedir="./target/classes/" includes="**/*">
+        </jar>
+    </target>
+</project>
