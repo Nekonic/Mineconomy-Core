@@ -106,7 +106,7 @@ public class MarkCommand implements CommandExecutor {
             return true;
         }
 
-        sender.sendMessage(ChatColor.RED + "Usage: /mark balance or /mark setbalance <player> <amount>");
+        sender.sendMessage(ChatColor.RED + "Usage: /mark <player> setbalance <amount>");
         return false;
     }
 }
