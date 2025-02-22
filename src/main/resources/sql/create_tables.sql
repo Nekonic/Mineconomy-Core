@@ -1,9 +1,9 @@
 CREATE TABLE users
 (
-    name_id  TEXT PRIMARY KEY,           -- 사용자 고유 ID
+    name_id  TEXT UNIQUE,                -- 사용자 고유 ID
     balance  REAL NOT NULL DEFAULT 0.0,  -- 보유 화폐
-    uuid     TEXT UNIQUE,                -- 플레이어의 고유 UUID
-    language TEXT          DEFAULT 'en', -- 사용자 언어 설정
+    uuid     TEXT PRIMARY KEY,           -- 플레이어의 고유 UUID
+    language TEXT NOT NULL DEFAULT 'en', -- 사용자 언어 설정
 );
 
 CREATE TABLE companies
@@ -14,16 +14,6 @@ CREATE TABLE companies
     balance    REAL     NOT NULL DEFAULT 0.0,               -- 회사 자산
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 설립 시간
     FOREIGN KEY (owner_id) REFERENCES users (name_id)
-);
-
--- company_employees : 회사 직원 관리
-CREATE TABLE company_employees
-(
-    company_id  TEXT NOT NULL, -- 회사 ID
-    employee_id TEXT NOT NULL, -- 직원 ID
-    PRIMARY KEY (company_id, employee_id),
-    FOREIGN KEY (company_id) REFERENCES companies (company_id),
-    FOREIGN KEY (employee_id) REFERENCES users (name_id)
 );
 
 -- stocks : 주식 정보 저장
