@@ -24,7 +24,6 @@ CREATE TABLE stocks
     historical_prices TEXT,                                       -- 과거 가격 데이터 (JSON 형식)
     volume            INTEGER           DEFAULT 0,                -- 거래량
     last_updated      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP -- 마지막 업데이트 시간
-        FOREIGN KEY (company_id) REFERENCES companies(company_id) -- 회사 ID
 );
 
 CREATE TABLE stock_prices

@@ -17,6 +17,7 @@ dependencies {
 
     compileOnly 'io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT'
     implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
+    implementation files('/home/nekonic/1server/plugins/Mineconomy-GUI.jar')
 }
 
 java {

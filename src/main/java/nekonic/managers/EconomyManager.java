@@ -1,6 +1,6 @@
 package nekonic.managers;
 
-import nekonic.utils.CurrencyItem;
+import nekonic.utils.Create_GUI_Item;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -26,7 +26,7 @@ public class EconomyManager {
 
         // 인벤토리에서 Gold Coin 감지
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && item.isSimilar(CurrencyItem.createCurrencyItem(1))) {
+            if (item != null && item.isSimilar(Create_GUI_Item.createCurrencyItem(1))) {
                 totalCoins += item.getAmount();
                 player.getInventory().remove(item);
             }
@@ -68,7 +68,7 @@ public class EconomyManager {
         setBalance(nameId, currentBalance - totalWithdraw);
 
         if (player != null) {
-            ItemStack coins = CurrencyItem.createCurrencyItem(coinCount);
+            ItemStack coins = Create_GUI_Item.createCurrencyItem(coinCount);
             player.getInventory().addItem(coins);
 
             player.sendMessage(ChatColor.GREEN + "Withdrew " + ChatColor.GOLD + coinCount + " Gold Coins"
