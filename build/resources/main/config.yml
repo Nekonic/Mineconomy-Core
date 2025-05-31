@@ -1,9 +1,0 @@
-economy:
-  mark_initial_value: 100
-  min_base_rate: 1.0
-  max_base_rate: 5.0
-  base_rate_update_interval: 72000
-
-  item_values:
-    GOLD_INGOT: 100      # 금괴 1개당 100 Mark
-    EMERALD: 200         # 에메랄드 1개당 200 Mark

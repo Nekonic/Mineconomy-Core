@@ -7,7 +7,8 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
-    maven { url = 'https://papermc.io/repo/repository/maven-public/' }
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -16,11 +17,11 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.6.0'
 
     compileOnly 'io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT'
-    implementation 'org.xerial:sqlite-jdbc:3.41.2.2'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7.1'
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(22))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 processResources {
@@ -34,8 +35,8 @@ processResources {
 
 jar {
     archiveFileName = 'Mineconomy-Core.jar'
-     if (!System.getenv("CI")) { // GitHub Actions 환경이 아닐 경우에만 적용
-        destinationDirectory = file("D:\\1\\java\\server\\plugins")
+    if (!System.getenv("CI")) { // GitHub Actions 환경이 아닐 경우에만 적용
+        destinationDirectory = file("${System.getProperty('user.home')}/Documents/1server/plugins")
     }
 }
 
